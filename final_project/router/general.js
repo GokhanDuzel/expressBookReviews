@@ -23,15 +23,17 @@ public_users.post("/register", (req,res) => {
             return false;
         }
     }
-  
-    if (username && password) {
-        if (!doesExist(username)) { 
-            users.push({"username":username,"password":password});
-            return res.status(200).json({message: "User successfully registred. Now you can login"});
-        } else {
-            return res.status(404).json({message: "User already exists!"});    
+    
+    if(isValid(username)){
+        if (username && password) {
+            if (!doesExist(username)) { 
+                users.push({"username":username,"password":password});
+                return res.status(200).json({message: "User successfully registred. Now you can login"});
+            } else {
+                return res.status(404).json({message: "User already exists!"});    
+            }
         }
-    } 
+    }
     return res.status(404).json({message: "Unable to register user."});
 });
 
@@ -46,13 +48,11 @@ public_users.get('/',async function (req, res) {
     try {
         const bookData = await readFile('./router/booksdb.js', 'utf8');
         const books = eval(bookData);
-        res.send(JSON.stringify(books, null, 4));
+        res.send(books);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Server Error` });
     }
 });
-
 
 // // Get book details based on ISBN
 // public_users.get('/isbn/:isbn',function (req, res) {
@@ -74,7 +74,6 @@ public_users.get('/isbn/:isbn',async function (req, res) {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Server error.` });
     }
 });
   
@@ -95,7 +94,6 @@ public_users.get('/author/:author', async function (req, res) {
         res.send({booksbyauthor: filtered_author});
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Server error.` });
     }
 });
 
@@ -116,7 +114,6 @@ public_users.get('/title/:title',async function (req, res) {
         res.send({booksbytitle: filtered_title});
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: `Server error.` });
     }
 
 });
